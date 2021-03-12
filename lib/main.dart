@@ -1,5 +1,5 @@
 import 'package:docs/pages/auth_page.dart';
-import 'package:docs/pages/layout_page.dart';
+import 'package:docs/pages/dashboard_page.dart';
 import 'package:docs/pages/login_page.dart';
 import 'package:docs/utils/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       routes: {
         AuthPage.id: (context) => AuthPage(),
         LoginPage.id: (context) => LoginPage(),
-        LayoutPage.id: (context) => LayoutPage(),
+        DashboardPage.id: (context) => DashboardPage(),
       },
     );
   }

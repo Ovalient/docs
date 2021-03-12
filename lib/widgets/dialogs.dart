@@ -6,8 +6,7 @@ emailVerificationDialog(BuildContext context) {
     context: context,
     barrierDismissible: false,
     builder: (_) => AssetGiffyDialog(
-      image: Image.asset('assets/images/email_verification.gif',
-          fit: BoxFit.cover),
+      image: Image.asset('images/email_verification.gif', fit: BoxFit.cover),
       cornerRadius: 0.0,
       buttonRadius: 0.0,
       onlyOkButton: true,

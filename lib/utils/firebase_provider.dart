@@ -82,6 +82,21 @@ User getUser() {
   return user;
 }
 
+Future<String> getUserInfo() async {
+  final uid = _auth.currentUser.uid;
+  String name;
+
+  await FirebaseFirestore.instance
+      .collection('user')
+      .doc(uid)
+      .get()
+      .then((DocumentSnapshot doc) {
+    if (doc.exists) name = doc.data()['userName'];
+  });
+
+  return name;
+}
+
 // 이메일/비밀번호로 Firebase에 회원가입
 Future<String> signUp({String username, String email, String password}) async {
   String errorMessage;
