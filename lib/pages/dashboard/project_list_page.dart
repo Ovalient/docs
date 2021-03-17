@@ -1,110 +1,68 @@
-import 'package:docs/models/report.dart';
-import 'package:docs/utils/data_source.dart';
+import 'package:docs/pages/dashboard/tab_pages/factory_list.dart';
+import 'package:docs/pages/dashboard/tab_pages/recent_list.dart';
+import 'package:docs/pages/dashboard/tab_pages/search_list.dart';
+import 'package:docs/pages/dashboard_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ProjectListPage extends StatefulWidget {
-  static const String id = '/layoutPage/projectListPage';
+  static const String id = '/dashboard/projectList';
   ProjectListPage({Key key}) : super(key: key);
 
   @override
   _ProjectListPageState createState() => _ProjectListPageState();
 }
 
-class _ProjectListPageState extends State<ProjectListPage> {
-  int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+class _ProjectListPageState extends State<ProjectListPage>
+    with SingleTickerProviderStateMixin {
+  final firestore = FirebaseFirestore.instance;
+
+  TabController _tabController;
+  int _selectedTabIndex = 0;
+
+  List<Widget> _tabList = [
+    Tab(icon: Icon(Icons.access_time), text: '최신 순'),
+    Tab(icon: Icon(Icons.location_on), text: '사이트 별'),
+    Tab(icon: Icon(Icons.search), text: '상세 검색')
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(
+        initialIndex: _selectedTabIndex, length: _tabList.length, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _selectedTabIndex = _tabController.index;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('프로젝트 리스트'),
+          title: Text('프로젝트 리스트'),
+          bottom: TabBar(
+            onTap: (index) {},
+            controller: _tabController,
+            tabs: _tabList,
+          )),
+      body: TabBarView(
+        controller: _tabController,
+        children: <Widget>[
+          RecentList(),
+          FactoryList(),
+          SearchList(),
+        ],
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 30.0, vertical: 30.0),
-          child: StreamBuilder(
-            stream: firestore
-                .collection('board')
-                .orderBy('date', descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Center(child: CircularProgressIndicator()));
-
-              List<Report> list = [];
-              snapshot.data.docs.forEach((element) {
-                list.add(Report(
-                  companyName: element['companyName'],
-                  factoryName: element['factoryName'],
-                  projectNum: element['projectNum'],
-                  title: element['title'],
-                  date: element['date'],
-                  views: element['views'],
-                ));
-              });
-              print(list.length);
-              var documents = ReportDataSource(list);
-
-              return PaginatedDataTable(
-                columns: [
-                  DataColumn(
-                    label: Container(
-                      width: 50,
-                      child: Text(
-                        '제조사',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Container(
-                      width: 100,
-                      child: Text(
-                        '사이트',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Container(
-                      width: 150,
-                      child: Text(
-                        '프로젝트 번호',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Container(
-                      width: 600,
-                      child: Text(
-                        '프로젝트 명',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      '최근 문서',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-                source: documents,
-                availableRowsPerPage: [10, 20, 30],
-                onRowsPerPageChanged: (index) {
-                  setState(() {
-                    _rowsPerPage = index;
-                  });
-                },
-                rowsPerPage: _rowsPerPage,
-              );
-            },
-          ),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          onTabNavigate(4);
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.red[900],
+        tooltip: '새 프로젝트 추가',
       ),
     );
   }

@@ -18,3 +18,25 @@ class Report {
       this.title,
       this.views});
 }
+
+class Contents {
+  bool importance;
+  String category;
+  String contents;
+  Timestamp date;
+  String email;
+  String userName;
+
+  Contents(
+      {this.importance,
+      this.category,
+      this.contents,
+      this.date,
+      this.email,
+      this.userName});
+}
+
+Report selectedReport;
+
+String userEmail;
+String userName;

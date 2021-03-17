@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class BookmarkPage extends StatefulWidget {
-  static const String id = '/layoutPage/bookmarkPage';
+  static const String id = '/dashboard/bookmark';
   BookmarkPage({Key key}) : super(key: key);
 
   @override

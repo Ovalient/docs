@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 TextStyle listTitleDefaultTextStyle =
     TextStyle(color: Colors.white70, fontSize: 20.0);
@@ -11,7 +12,7 @@ Color selectedColor = Color(0xFF4AC8EA);
 Color drawerBackgroundColor = Color(0xFF272D34);
 
 final mainTheme = ThemeData(
-  fontFamily: 'SCDream',
+  textTheme: GoogleFonts.notoSansTextTheme(),
   primarySwatch: Colors.blueGrey,
   backgroundColor: Colors.white,
   cardColor: Colors.blueGrey[50],
@@ -28,6 +29,7 @@ final mainTheme = ThemeData(
     ),
     headline1: TextStyle(color: Colors.blueGrey[800]),
   ),
+  appBarTheme: AppBarTheme(backgroundColor: Color(0xF2404B60)),
   bottomAppBarColor: Colors.blueGrey[900],
   iconTheme: IconThemeData(color: Colors.blueGrey),
 );

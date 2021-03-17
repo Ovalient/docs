@@ -6,7 +6,8 @@ emailVerificationDialog(BuildContext context) {
     context: context,
     barrierDismissible: false,
     builder: (_) => AssetGiffyDialog(
-      image: Image.asset('images/email_verification.gif', fit: BoxFit.cover),
+      image: Image.asset('assets/images/email_verification.gif',
+          fit: BoxFit.cover),
       cornerRadius: 0.0,
       buttonRadius: 0.0,
       onlyOkButton: true,
@@ -25,5 +26,31 @@ emailVerificationDialog(BuildContext context) {
         Navigator.of(context).pop();
       },
     ),
+  );
+}
+
+dateDialog(BuildContext context) {
+  return showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Row(
+          children: <Widget>[
+            Icon(Icons.report_problem),
+            SizedBox(width: 10.0),
+            Text('알림', style: TextStyle(fontWeight: FontWeight.w900)),
+          ],
+        ),
+        content: Text('날짜가 정확하지 않습니다'),
+        actions: [
+          MaterialButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK')),
+        ],
+      );
+    },
   );
 }

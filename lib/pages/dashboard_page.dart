@@ -1,3 +1,6 @@
+import 'package:docs/models/model.dart';
+import 'package:docs/pages/dashboard/add_project_page.dart';
+import 'package:docs/pages/dashboard/list_detail_page.dart';
 import 'package:docs/pages/login_page.dart';
 import 'package:docs/utils/firebase_provider.dart';
 import 'package:flutter/material.dart';
@@ -8,16 +11,20 @@ import 'dashboard/main_page.dart';
 import 'dashboard/project_list_page.dart';
 
 class DashboardPage extends StatefulWidget {
-  static const String id = '/dashboardPage';
+  static const String id = '/dashboard';
   DashboardPage({Key key}) : super(key: key);
 
   @override
   _DashboardPageState createState() => _DashboardPageState();
 }
 
+PageController _pageController;
+void onTabNavigate(int index) {
+  _pageController.jumpToPage(index);
+}
+
 class _DashboardPageState extends State<DashboardPage>
     with SingleTickerProviderStateMixin {
-  PageController _pageController;
   int _currentIndex = 0;
 
   List drawerItems = [
@@ -34,11 +41,6 @@ class _DashboardPageState extends State<DashboardPage>
       "name": "북마크",
     }
   ];
-
-  void onTabNavigate(int index) {
-    _pageController.animateToPage(index,
-        duration: Duration(milliseconds: 200), curve: Curves.ease);
-  }
 
   @override
   void initState() {
@@ -64,15 +66,22 @@ class _DashboardPageState extends State<DashboardPage>
                 padding: EdgeInsets.zero,
                 children: <Widget>[
                   FutureBuilder(
-                    future: getUserInfo(),
-                    builder: (context, snapshots) {
-                      String name = (snapshots.hasData) ? snapshots.data : '';
+                    future: getUserInfo(getUser().uid),
+                    builder: (context, snapshot) {
+                      String name = snapshot.hasData ? snapshot.data[0] : '';
+
+                      userEmail = getUser().email;
+                      userName = snapshot.hasData ? snapshot.data[0] : '';
+
+                      print(userName);
 
                       return UserAccountsDrawerHeader(
+                        decoration: BoxDecoration(color: Color(0xF2404B60)),
                         currentAccountPicture: CircleAvatar(
                           backgroundColor: Colors.redAccent,
                           child: Icon(
                             Icons.check,
+                            color: Colors.white,
                           ),
                         ),
                         accountName: Text(name),
@@ -143,11 +152,14 @@ class _DashboardPageState extends State<DashboardPage>
         ),
         Expanded(
           child: PageView(
+            physics: NeverScrollableScrollPhysics(),
             controller: _pageController,
             children: <Widget>[
               MainPage(),
               ProjectListPage(),
               BookmarkPage(),
+              ListDetailPage(),
+              AddProjectPage(),
             ],
             onPageChanged: (index) {
               setState(() {
