@@ -214,6 +214,13 @@ class _RecentListState extends State<RecentList>
   bool get wantKeepAlive => true;
 
   @override
+  void initState() {
+    super.initState();
+
+    isBookmark = false;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 30.0),

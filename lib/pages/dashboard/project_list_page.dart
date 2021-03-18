@@ -61,7 +61,7 @@ class _ProjectListPageState extends State<ProjectListPage>
           onTabNavigate(4);
         },
         child: Icon(Icons.add),
-        backgroundColor: Colors.red[900],
+        backgroundColor: Colors.redAccent,
         tooltip: '새 프로젝트 추가',
       ),
     );

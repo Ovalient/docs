@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: '프로젝트 정보 공유 게시판',
       theme: mainTheme,
       initialRoute: AuthPage.id,
       routes: {

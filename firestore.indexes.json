@@ -1,0 +1,23 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "board",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "companyName",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "factoryName",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

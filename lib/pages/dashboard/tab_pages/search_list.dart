@@ -193,6 +193,8 @@ class _SearchListState extends State<SearchList>
   @override
   void initState() {
     super.initState();
+    isBookmark = false;
+
     _textController = TextEditingController();
     _textController.text = null;
     _textFocusNode = FocusNode();

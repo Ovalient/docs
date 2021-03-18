@@ -40,3 +40,5 @@ Report selectedReport;
 
 String userEmail;
 String userName;
+
+bool isBookmark;

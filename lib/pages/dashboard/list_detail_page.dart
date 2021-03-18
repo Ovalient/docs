@@ -31,14 +31,30 @@ class _ListDetailPageState extends State<ListDetailPage> {
   Uint8List _bytesData;
   String fileName;
 
+  bool _importance;
+  bool _kickoff;
+
   String category;
-  bool _isCategorySelected = false;
+  bool _isCategorySelected;
+  String projectManager;
 
   TextEditingController textControllerContents;
   FocusNode textFocusNodeContents;
 
-  bool _importance = false;
-  bool _kickoff = false;
+  @override
+  void initState() {
+    super.initState();
+
+    _importance = false;
+    _kickoff = false;
+    category = null;
+    _isCategorySelected = false;
+    projectManager = null;
+
+    textControllerContents = TextEditingController();
+    textControllerContents.text = null;
+    textFocusNodeContents = FocusNode();
+  }
 
   editAttachmentDialog(BuildContext context, Contents selectedContent) {
     List<Uint8List> _bytesFiles = [];
@@ -177,7 +193,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
                                                     ),
                                                   ),
                                                   SizedBox(width: 5.0),
-                                                  FlatButton(
+                                                  MaterialButton(
                                                     onPressed: () {
                                                       setState(() {
                                                         _files.removeAt(index);
@@ -201,7 +217,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
                               ButtonTheme(
                                 minWidth: 160.0,
                                 height: 50.0,
-                                child: RaisedButton(
+                                child: ElevatedButton(
                                   onPressed: () async {
                                     html.InputElement uploadInput =
                                         html.FileUploadInputElement();
@@ -290,6 +306,529 @@ class _ListDetailPageState extends State<ListDetailPage> {
         },
       ),
     );
+  }
+
+  addContentsDialog(BuildContext context) {
+    List<Uint8List> _bytesFiles = [];
+    List<html.File> _files = [];
+
+    bool _isAttached = false;
+    bool _isEditing = false;
+
+    return AlertDialog(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text('새 내용 추가', style: TextStyle(fontWeight: FontWeight.w900)),
+          MaterialButton(
+            height: 30.0,
+            minWidth: 30.0,
+            child: Icon(Icons.close),
+            onPressed: () {
+              if (_isEditing || _isCategorySelected || _isAttached) {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext childContext) {
+                    return AlertDialog(
+                      title: Row(
+                        children: <Widget>[
+                          Icon(Icons.report_problem),
+                          SizedBox(width: 10.0),
+                          Text('작성중인 글이 있습니다',
+                              style: TextStyle(fontWeight: FontWeight.w900)),
+                        ],
+                      ),
+                      content: Text('정말 작업을 그만두겠습니까?'),
+                      actions: [
+                        MaterialButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              Navigator.of(childContext).pop();
+
+                              setState(() {
+                                _bytesFiles = [];
+                                _files = [];
+
+                                _importance = false;
+                                _kickoff = false;
+                                category = null;
+                                _isCategorySelected = false;
+                                projectManager = null;
+
+                                textControllerContents =
+                                    TextEditingController();
+                                textControllerContents.text = null;
+                                textFocusNodeContents = FocusNode();
+                              });
+                            },
+                            child: Text('OK')),
+                        MaterialButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cancel')),
+                      ],
+                    );
+                  },
+                );
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        ],
+      ),
+      content: StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          setState(() {});
+
+          return Container(
+            width: MediaQuery.of(context).size.width * 0.6,
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Checkbox(
+                        activeColor: Colors.red,
+                        value: _importance,
+                        onChanged: (value) {
+                          setState(() {
+                            _importance = value;
+                          });
+                        },
+                      ),
+                      Text('중요'),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 120.0,
+                        child: Text('등록 유형', style: TextStyle(fontSize: 20.0)),
+                      ),
+                      StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('category')
+                            .doc('FqnVsuezYynSLSwOCcAX')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            List<DropdownMenuItem> currentItems = [];
+
+                            snapshot.data['category'].forEach((element) {
+                              currentItems.add(
+                                DropdownMenuItem(
+                                  child: Text(element),
+                                  value: "$element",
+                                ),
+                              );
+                            });
+
+                            return DropdownButton(
+                              hint: Text('등록 유형'),
+                              items: currentItems,
+                              onChanged: (value) {
+                                setState(() {
+                                  category = value;
+                                  _isCategorySelected = true;
+                                  if (value == '킥어프-영업') {
+                                    _kickoff = true;
+                                  } else {
+                                    _kickoff = false;
+                                  }
+                                });
+                              },
+                              value: category,
+                              isExpanded: false,
+                            );
+                          } else
+                            return DropdownButton(
+                              hint: Text('등록 유형'),
+                            );
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.0),
+                  (_kickoff)
+                      ? Container(
+                          padding: const EdgeInsets.only(bottom: 10.0),
+                          child: Row(
+                            children: <Widget>[
+                              SizedBox(
+                                width: 120.0,
+                                child: Text('PM',
+                                    style: TextStyle(fontSize: 20.0)),
+                              ),
+                              StreamBuilder(
+                                stream: FirebaseFirestore.instance
+                                    .collection('user')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    List<DropdownMenuItem> currentItems = [];
+
+                                    snapshot.data.docs.forEach((element) {
+                                      currentItems.add(
+                                        DropdownMenuItem(
+                                          child: Text(element['userName']),
+                                          value: "${element['userName']}",
+                                        ),
+                                      );
+                                    });
+
+                                    return DropdownButton(
+                                      hint: Text('PM'),
+                                      items: currentItems,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          projectManager = value;
+                                        });
+                                      },
+                                      value: projectManager,
+                                      isExpanded: false,
+                                    );
+                                  } else
+                                    return DropdownButton(
+                                      hint: Text('PM'),
+                                    );
+                                },
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(),
+                  Container(
+                    height: 200,
+                    child: TextField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      expands: true,
+                      textInputAction: TextInputAction.next,
+                      autofocus: true,
+                      textAlignVertical: TextAlignVertical.top,
+                      style: TextStyle(color: Colors.black),
+                      controller: textControllerContents,
+                      onChanged: (value) {
+                        setState(() {
+                          _isEditing = true;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        border: new OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: Colors.blueGrey[800],
+                            width: 3,
+                          ),
+                        ),
+                        filled: true,
+                        hintStyle: new TextStyle(
+                          color: Colors.blueGrey[300],
+                        ),
+                        hintText: "내용",
+                        fillColor: Colors.white,
+                        errorText: _isEditing
+                            ? _validateContents(textControllerContents.text)
+                            : null,
+                        errorStyle: TextStyle(
+                          fontSize: 12,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Divider(thickness: 0.3, color: Colors.black),
+                  SizedBox(height: 5),
+                  SizedBox(
+                    child: Column(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "첨부자료",
+                            style: TextStyle(
+                              fontSize: 18.0,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Flexible(
+                                flex: 4,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minHeight: 50.0,
+                                    maxHeight: 300.0,
+                                    minWidth: double.infinity,
+                                  ),
+                                  child: (_files.length > 0)
+                                      ? Scrollbar(
+                                          child: ListView.separated(
+                                            shrinkWrap: true,
+                                            itemCount: (_files != null &&
+                                                    _files.isNotEmpty)
+                                                ? _files.length
+                                                : 1,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              return Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Expanded(
+                                                    child: AutoSizeText(
+                                                      _files[index].name,
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 5.0),
+                                                  MaterialButton(
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        _files.removeAt(index);
+                                                      });
+                                                    },
+                                                    child: Text("×"),
+                                                  )
+                                                ],
+                                              );
+                                            },
+                                            separatorBuilder:
+                                                (BuildContext context,
+                                                        int index) =>
+                                                    const Divider(),
+                                          ),
+                                        )
+                                      : SizedBox(),
+                                ),
+                              ),
+                              SizedBox(width: 10.0),
+                              ButtonTheme(
+                                minWidth: 160.0,
+                                height: 50.0,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    html.InputElement uploadInput =
+                                        html.FileUploadInputElement();
+                                    uploadInput.multiple = true;
+                                    uploadInput.draggable = true;
+                                    uploadInput.click();
+
+                                    uploadInput.onChange.listen((e) {
+                                      final files = uploadInput.files;
+                                      //final file = files[0];
+
+                                      files.forEach((element) {
+                                        final reader = new html.FileReader();
+                                        reader.onLoadEnd.listen((e) {
+                                          setState(() {
+                                            _bytesData = Base64Decoder()
+                                                .convert(reader.result
+                                                    .toString()
+                                                    .split(",")
+                                                    .last);
+                                            _selectedFile = _bytesData;
+                                          });
+                                          setState(() {
+                                            _files.add(element);
+                                            _isAttached = true;
+                                            print(element);
+                                          });
+                                        });
+                                        reader.readAsDataUrl(element);
+                                      });
+                                    });
+                                  },
+                                  child: Text(
+                                    "파일 첨부",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18.0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FloatingActionButton(
+                        onPressed: (_isEditing && _isCategorySelected)
+                            ? () async {
+                                await showDialog(
+                                  context: context,
+                                  builder: (BuildContext childContext) {
+                                    return AlertDialog(
+                                      title: Text('알림'),
+                                      content: Text('내용을 추가하시겠습니까?'),
+                                      actions: [
+                                        MaterialButton(
+                                          child: Text('OK'),
+                                          onPressed: () async {
+                                            Navigator.of(context).pop();
+                                            Navigator.of(childContext).pop();
+                                            await uploadToStorage(
+                                                _files, projectManager);
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                            : null,
+                        child: Icon(Icons.save),
+                        backgroundColor: (_isEditing && _isCategorySelected)
+                            ? Colors.red
+                            : Colors.grey,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  String _validateContents(String value) {
+    if (value != null) {
+      if (value.isEmpty) {
+        return '내용을 입력하세요';
+      }
+    }
+    return null;
+  }
+
+  Future<void> uploadToStorage(List<html.File> files, projectManager) async {
+    final dateTime = DateTime.now();
+    final stringDate = DateFormat().format(DateTime.now());
+    final companyName = selectedReport.companyName;
+    final factoryName = selectedReport.factoryName;
+    final projectNum = selectedReport.projectNum;
+    final contents = textControllerContents.text;
+
+    List<UploadTask> tasks = [];
+
+    try {
+      if (files != null) {
+        files.forEach((html.File element) async {
+          final fileName = element.name;
+          final path =
+              '$companyName/$factoryName/$projectNum/$category/$stringDate/$fileName';
+          var task = storage.ref().child(path).putBlob(element);
+
+          tasks.add(task);
+          print(fileName);
+        });
+      }
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                Opacity(
+                  opacity: 1.0,
+                  child: CircularProgressIndicator(
+                      valueColor:
+                          new AlwaysStoppedAnimation<Color>(Colors.white)),
+                ),
+              ],
+            );
+          });
+      if (projectManager != null) {
+        String uid;
+        await firestore
+            .collection('user')
+            .where('userName', isEqualTo: projectManager)
+            .get()
+            .then((value) {
+          value.docs.forEach((element) {
+            uid = element.id;
+          });
+        });
+        await firestore.collection('board').doc(projectNum).update({
+          'projectNum': selectedReport.projectNum,
+          'companyName': selectedReport.companyName,
+          'factoryName': selectedReport.factoryName,
+          'title': selectedReport.title,
+          'date': Timestamp.fromDate(dateTime),
+          'manager': uid,
+          'views': 0,
+        });
+      } else {
+        await firestore.collection('board').doc(projectNum).update({
+          'projectNum': selectedReport.projectNum,
+          'companyName': selectedReport.companyName,
+          'factoryName': selectedReport.factoryName,
+          'title': selectedReport.title,
+          'date': Timestamp.fromDate(dateTime),
+          'manager': '미정',
+          'views': 0,
+        });
+      }
+      await firestore
+          .collection('board')
+          .doc(projectNum)
+          .collection('contents')
+          .add({
+        'importance': _importance,
+        'category': category,
+        'contents': contents,
+        'date': Timestamp.fromDate(dateTime),
+        'email': userEmail,
+        'userName': userName,
+      });
+      await firestore.collection('recent').add({
+        'recent':
+            '$factoryName | $projectNum | ${selectedReport.title} | $category',
+        'date': DateTime.now(),
+      });
+      for (var element in tasks) {
+        element.snapshotEvents.listen((snapshot) {
+          print(
+              'Progress: ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100} %');
+        });
+        await element;
+      }
+
+      if (_importance) await sendEmail(stringDate);
+      Navigator.of(context).pop();
+
+      setState(() {});
+
+      createSnackBar('내용 추가가 완료되었습니다');
+    } on FirebaseException catch (e) {
+      // e.g, e.code == 'canceled'
+    }
   }
 
   Future<void> addAttachment(
@@ -641,7 +1180,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
             leading: IconButton(
               icon: Icon(Icons.keyboard_arrow_left),
               onPressed: () {
-                onTabNavigate(1);
+                isBookmark ? onTabNavigate(2) : onTabNavigate(1);
               },
             ),
             title: Text('프로젝트 자세히 보기'),
@@ -900,6 +1439,19 @@ class _ListDetailPageState extends State<ListDetailPage> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return addContentsDialog(context);
+              });
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.redAccent,
+        tooltip: '새 내용 추가',
       ),
     );
   }
