@@ -1457,46 +1457,54 @@ class _ListDetailPageState extends State<ListDetailPage> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Row(
-                                        children: <Widget>[
-                                          Container(
-                                            padding:
-                                                EdgeInsets.only(right: 12.0),
-                                            decoration: new BoxDecoration(
-                                                border: new Border(
-                                                    right: new BorderSide(
-                                                        width: 1.0,
-                                                        color:
-                                                            Colors.white24))),
-                                            child: (_details[index].importance)
-                                                ? IconButton(
-                                                    icon: Icon(Icons
-                                                        .local_fire_department),
-                                                    iconSize: 24.0,
-                                                    color: Colors.red,
-                                                    tooltip: '높은 중요도',
-                                                    onPressed: () {},
-                                                  )
-                                                : IconButton(
-                                                    icon:
-                                                        Icon(Icons.trip_origin),
-                                                    iconSize: 24.0,
-                                                    color: Colors.green,
-                                                    tooltip: '낮은 중요도',
-                                                    onPressed: () {},
-                                                  ),
-                                          ),
-                                          Container(
-                                            padding: EdgeInsets.only(top: 2.0),
-                                            width: 240.0,
-                                            child: Text(
-                                                '${_details[index].category}',
-                                                style: TextStyle(
-                                                    fontSize: 24.0,
-                                                    fontWeight:
-                                                        FontWeight.w900)),
-                                          ),
-                                        ],
+                                      Expanded(
+                                        flex: 4,
+                                        child: Row(
+                                          children: <Widget>[
+                                            Container(
+                                              padding:
+                                                  EdgeInsets.only(right: 12.0),
+                                              decoration: new BoxDecoration(
+                                                  border: new Border(
+                                                      right: new BorderSide(
+                                                          width: 1.0,
+                                                          color:
+                                                              Colors.white24))),
+                                              child: (_details[index]
+                                                      .importance)
+                                                  ? IconButton(
+                                                      icon: Icon(Icons
+                                                          .local_fire_department),
+                                                      iconSize: 24.0,
+                                                      color: Colors.red,
+                                                      tooltip: '높은 중요도',
+                                                      onPressed: () {},
+                                                    )
+                                                  : IconButton(
+                                                      icon: Icon(
+                                                          Icons.trip_origin),
+                                                      iconSize: 24.0,
+                                                      color: Colors.green,
+                                                      tooltip: '낮은 중요도',
+                                                      onPressed: () {},
+                                                    ),
+                                            ),
+                                            Expanded(
+                                              flex: 1,
+                                              child: Container(
+                                                padding:
+                                                    EdgeInsets.only(top: 2.0),
+                                                width: 240.0,
+                                                child: Text(
+                                                    '${_details[index].category}',
+                                                    style: TextStyle(
+                                                        fontSize: 24.0,
+                                                        fontWeight:
+                                                            FontWeight.w900)),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                       Tooltip(
                                         message: '새 프로젝트 추가',
@@ -1535,17 +1543,22 @@ class _ListDetailPageState extends State<ListDetailPage> {
                                   SizedBox(height: 2.0),
                                   Row(
                                     children: <Widget>[
-                                      SizedBox(
-                                          width: 150,
-                                          child: Text('작성 시간',
-                                              style: TextStyle(
-                                                  fontSize: 16.0,
-                                                  fontWeight:
-                                                      FontWeight.bold))),
-                                      Text(
-                                          DateFormat('yyyy.MM.dd kk:mm').format(
-                                              _details[index].date.toDate()),
-                                          style: TextStyle(fontSize: 16.0)),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text('작성 시간',
+                                            style: TextStyle(
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.bold)),
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: Text(
+                                            DateFormat('yyyy.MM.dd kk:mm')
+                                                .format(_details[index]
+                                                    .date
+                                                    .toDate()),
+                                            style: TextStyle(fontSize: 16.0)),
+                                      ),
                                     ],
                                   ),
                                   SizedBox(height: 2.0),
@@ -1553,32 +1566,30 @@ class _ListDetailPageState extends State<ListDetailPage> {
                                   SizedBox(height: 2.0),
                                   Row(
                                     children: <Widget>[
-                                      SizedBox(
-                                          width: 150,
-                                          child: Text('작성자',
-                                              style: TextStyle(
-                                                  fontSize: 16.0,
-                                                  fontWeight:
-                                                      FontWeight.bold))),
-                                      AutoSizeText.rich(
-                                        TextSpan(
-                                          children: <TextSpan>[
-                                            TextSpan(
-                                              text:
-                                                  '${_details[index].userName}',
-                                            ),
-                                            TextSpan(
-                                              text:
-                                                  '  ${_details[index].email}',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.w300),
-                                            ),
-                                          ],
-                                          style: TextStyle(
-                                              fontFamily: 'NanumBarunGothic',
-                                              fontSize: 16.0),
-                                        ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text('작성자',
+                                            style: TextStyle(
+                                                fontSize: 16.0,
+                                                fontWeight: FontWeight.bold)),
                                       ),
+                                      Expanded(
+                                          flex: 2,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                  '${_details[index].userName}',
+                                                  style: TextStyle(
+                                                      fontSize: 16.0)),
+                                              Text('${_details[index].email}',
+                                                  style: TextStyle(
+                                                      fontSize: 16.0,
+                                                      fontWeight:
+                                                          FontWeight.w300)),
+                                            ],
+                                          )),
                                     ],
                                   ),
                                   SizedBox(height: 2.0),

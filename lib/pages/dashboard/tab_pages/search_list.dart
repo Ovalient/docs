@@ -58,15 +58,7 @@ class _SearchListState extends State<SearchList>
             onTabNavigate(3);
           else
             Navigator.pushNamed(context, ListDetailPage.id);
-          selectedReport = Report(
-            companyName: report.companyName,
-            date: report.date,
-            factoryName: report.factoryName,
-            manager: report.manager,
-            projectNum: report.projectNum,
-            title: report.title,
-            views: report.views,
-          );
+          selectedReport = report;
         },
         child: ListTile(
           title:
@@ -371,6 +363,7 @@ class _SearchListState extends State<SearchList>
                           companyName: element.data()['companyName'],
                           factoryName: element.data()['factoryName'],
                           projectNum: element.data()['projectNum'],
+                          manager: element.data()['manager'],
                           title: element.data()['title'],
                           views: element.data()['views'],
                         ));
