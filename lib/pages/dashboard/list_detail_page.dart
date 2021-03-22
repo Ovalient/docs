@@ -780,7 +780,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
           'companyName': selectedReport.companyName,
           'factoryName': selectedReport.factoryName,
           'title': selectedReport.title,
-          'date': Timestamp.fromDate(dateTime),
+          'date': selectedReport.date,
           'manager': uid,
           'views': 0,
         });
@@ -790,7 +790,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
           'companyName': selectedReport.companyName,
           'factoryName': selectedReport.factoryName,
           'title': selectedReport.title,
-          'date': Timestamp.fromDate(dateTime),
+          'date': selectedReport.date,
           'manager': '미정',
           'views': 0,
         });
@@ -938,6 +938,60 @@ class _ListDetailPageState extends State<ListDetailPage> {
     } else {
       print('Could not launch $url');
     }
+  }
+
+  Future<void> updateProjectManager() async {
+    print(projectManager);
+    String uid;
+    await firestore
+        .collection('user')
+        .where('userName', isEqualTo: projectManager)
+        .get()
+        .then((value) {
+      value.docs.forEach((element) {
+        uid = element.id;
+      });
+    });
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              Opacity(
+                opacity: 1.0,
+                child: CircularProgressIndicator(
+                    valueColor:
+                        new AlwaysStoppedAnimation<Color>(Colors.white)),
+              ),
+            ],
+          );
+        });
+    print(uid);
+    await firestore.collection('board').doc(selectedReport.projectNum).update({
+      'projectNum': selectedReport.projectNum,
+      'companyName': selectedReport.companyName,
+      'factoryName': selectedReport.factoryName,
+      'title': selectedReport.title,
+      'date': selectedReport.date,
+      'manager': uid,
+      'views': 0,
+    });
+    selectedReport = Report(
+        companyName: selectedReport.projectNum,
+        date: selectedReport.date,
+        factoryName: selectedReport.factoryName,
+        manager: uid,
+        projectNum: selectedReport.projectNum,
+        title: selectedReport.title,
+        views: selectedReport.views);
+
+    Navigator.of(context).pop();
+
+    setState(() {});
+
+    createSnackBar('PM 변경이 완료되었습니다');
   }
 
   getCompanyIcon(String name) {
@@ -1180,7 +1234,10 @@ class _ListDetailPageState extends State<ListDetailPage> {
             leading: IconButton(
               icon: Icon(Icons.keyboard_arrow_left),
               onPressed: () {
-                isBookmark ? onTabNavigate(2) : onTabNavigate(1);
+                if (MediaQuery.of(context).size.width > 600)
+                  isBookmark ? onTabNavigate(2) : onTabNavigate(1);
+                else
+                  Navigator.pop(context);
               },
             ),
             title: Text('프로젝트 자세히 보기'),
@@ -1195,16 +1252,159 @@ class _ListDetailPageState extends State<ListDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  FutureBuilder(
-                    future: getUserInfo(selectedReport.manager),
+                  StreamBuilder(
+                    stream: firestore
+                        .collection('user')
+                        .doc(selectedReport.manager)
+                        .snapshots(),
                     builder: (context, snapshot) {
+                      print(selectedReport.manager);
                       if (!snapshot.hasData) return Container();
 
-                      String name =
-                          snapshot.data.length != 0 ? snapshot.data[0] : '-';
+                      String name = selectedReport.manager == '미정'
+                          ? '미정'
+                          : snapshot.data['userName'];
 
                       return ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () async {
+                          await showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Text('PM 변경',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w900)),
+                                    MaterialButton(
+                                      height: 30.0,
+                                      minWidth: 30.0,
+                                      child: Icon(Icons.close),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                content: StatefulBuilder(
+                                  builder: (BuildContext context,
+                                      StateSetter setState) {
+                                    return SingleChildScrollView(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 30.0, vertical: 30.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 10.0),
+                                            child: Row(
+                                              children: <Widget>[
+                                                SizedBox(
+                                                  width: 120.0,
+                                                  child: Text('PM',
+                                                      style: TextStyle(
+                                                          fontSize: 20.0)),
+                                                ),
+                                                StreamBuilder(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('user')
+                                                      .snapshots(),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      List<DropdownMenuItem>
+                                                          currentItems = [];
+
+                                                      snapshot.data.docs
+                                                          .forEach((element) {
+                                                        currentItems.add(
+                                                          DropdownMenuItem(
+                                                            child: Text(element[
+                                                                'userName']),
+                                                            value:
+                                                                "${element['userName']}",
+                                                          ),
+                                                        );
+                                                      });
+
+                                                      return DropdownButton(
+                                                        hint: Text('PM'),
+                                                        items: currentItems,
+                                                        onChanged: (value) {
+                                                          setState(() {
+                                                            projectManager =
+                                                                value;
+                                                          });
+                                                        },
+                                                        value: projectManager,
+                                                        isExpanded: false,
+                                                      );
+                                                    } else
+                                                      return DropdownButton(
+                                                        hint: Text('PM'),
+                                                      );
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(height: 20.0),
+                                          Align(
+                                            alignment: Alignment.bottomRight,
+                                            child: FloatingActionButton(
+                                              onPressed: (projectManager !=
+                                                      null)
+                                                  ? () async {
+                                                      await showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            childContext) {
+                                                          return AlertDialog(
+                                                            title: Text('알림'),
+                                                            content: Text(
+                                                                'PM을 변경하시겠습니까?'),
+                                                            actions: [
+                                                              MaterialButton(
+                                                                child:
+                                                                    Text('OK'),
+                                                                onPressed:
+                                                                    () async {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                  Navigator.of(
+                                                                          childContext)
+                                                                      .pop();
+                                                                  await updateProjectManager();
+                                                                },
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    }
+                                                  : null,
+                                              child: Icon(Icons.save),
+                                              backgroundColor:
+                                                  (projectManager != null)
+                                                      ? Colors.red
+                                                      : Colors.grey,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        },
                         icon: Icon(Icons.contact_mail, color: Colors.white),
                         label: Text('$name',
                             style: TextStyle(color: Colors.white)),
@@ -1375,7 +1575,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
                                             ),
                                           ],
                                           style: TextStyle(
-                                              fontFamily: 'SCDream',
+                                              fontFamily: 'NanumBarunGothic',
                                               fontSize: 16.0),
                                         ),
                                       ),

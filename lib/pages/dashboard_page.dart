@@ -42,6 +42,12 @@ class _DashboardPageState extends State<DashboardPage>
     }
   ];
 
+  final List<BottomNavigationBarItem> _navItems = [
+    new BottomNavigationBarItem(icon: Icon(Icons.home), label: '메인'),
+    new BottomNavigationBarItem(icon: Icon(Icons.list), label: '프로젝트 리스트'),
+    new BottomNavigationBarItem(icon: Icon(Icons.bookmark), label: '북마크'),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -56,119 +62,148 @@ class _DashboardPageState extends State<DashboardPage>
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Drawer(
-          child: Stack(
+    return LayoutBuilder(
+      builder: (build, constraints) {
+        if (constraints.maxWidth > 600) {
+          return Row(
             children: [
-              ListView(
-                // Important: Remove any padding from the ListView.
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  FutureBuilder(
-                    future: getUserInfo(getUser().uid),
-                    builder: (context, snapshot) {
-                      String name = snapshot.hasData ? snapshot.data[0] : '';
+              Drawer(
+                child: Stack(
+                  children: [
+                    ListView(
+                      // Important: Remove any padding from the ListView.
+                      padding: EdgeInsets.zero,
+                      children: <Widget>[
+                        FutureBuilder(
+                          future: getUserInfo(getUser().uid),
+                          builder: (context, snapshot) {
+                            String name =
+                                snapshot.hasData ? snapshot.data[0] : '';
 
-                      userEmail = getUser().email;
-                      userName = snapshot.hasData ? snapshot.data[0] : '';
+                            userEmail = getUser().email;
+                            userName = snapshot.hasData ? snapshot.data[0] : '';
 
-                      print(userName);
+                            print(userName);
 
-                      return UserAccountsDrawerHeader(
-                        decoration: BoxDecoration(color: Color(0xF2404B60)),
-                        currentAccountPicture: CircleAvatar(
-                          backgroundColor: Colors.redAccent,
-                          child: Icon(
-                            Icons.check,
-                            color: Colors.white,
-                          ),
+                            return UserAccountsDrawerHeader(
+                              decoration:
+                                  BoxDecoration(color: Color(0xF2404B60)),
+                              currentAccountPicture: CircleAvatar(
+                                backgroundColor: Colors.redAccent,
+                                child: Icon(
+                                  Icons.check,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              accountName: Text(name),
+                              accountEmail: Text(getUser().email),
+                            );
+                          },
                         ),
-                        accountName: Text(name),
-                        accountEmail: Text(getUser().email),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.logout),
-                    title: Text('로그아웃'),
-                    onTap: () {
-                      signOut();
-                      Navigator.popAndPushNamed(context, LoginPage.id);
-                    },
-                  ),
-                  Divider(
-                    height: 1,
-                    thickness: 1,
-                  ),
-                  ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: drawerItems.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      Map item = drawerItems[index];
+                        ListTile(
+                          leading: Icon(Icons.logout),
+                          title: Text('로그아웃'),
+                          onTap: () {
+                            signOut();
+                            Navigator.popAndPushNamed(context, LoginPage.id);
+                          },
+                        ),
+                        Divider(
+                          height: 1,
+                          thickness: 1,
+                        ),
+                        ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount: drawerItems.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            Map item = drawerItems[index];
 
-                      return ListTile(
-                        leading: Icon(item['icon']),
-                        title: Text(item['name']),
-                        onTap: () {
-                          _currentIndex = index;
-                          onTabNavigate(_currentIndex);
-                        },
-                      );
-                    },
-                  ),
-                  Divider(
-                    height: 1,
-                    thickness: 1,
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.date_range),
-                    title: Text('구글 캘린더'),
-                    onTap: () async {
-                      String url = 'https://calendar.google.com/calendar';
-                      if (await canLaunch(url)) {
-                        await launch(url);
-                      } else {
-                        throw 'Could not launch $url';
-                      }
-                    },
-                  ),
-                ],
+                            return ListTile(
+                              leading: Icon(item['icon']),
+                              title: Text(item['name']),
+                              onTap: () {
+                                _currentIndex = index;
+                                onTabNavigate(_currentIndex);
+                              },
+                            );
+                          },
+                        ),
+                        Divider(
+                          height: 1,
+                          thickness: 1,
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.date_range),
+                          title: Text('구글 캘린더'),
+                          onTap: () async {
+                            String url = 'https://calendar.google.com/calendar';
+                            if (await canLaunch(url)) {
+                              await launch(url);
+                            } else {
+                              throw 'Could not launch $url';
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Image.asset('icons/logo.png'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Image.asset('icons/logo.png'),
+              VerticalDivider(
+                width: 1,
+                thickness: 1,
+              ),
+              Expanded(
+                child: PageView(
+                  physics: NeverScrollableScrollPhysics(),
+                  controller: _pageController,
+                  children: <Widget>[
+                    MainPage(),
+                    ProjectListPage(),
+                    BookmarkPage(),
+                    ListDetailPage(),
+                    AddProjectPage(),
+                  ],
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                  },
                 ),
               ),
             ],
-          ),
-        ),
-        VerticalDivider(
-          width: 1,
-          thickness: 1,
-        ),
-        Expanded(
-          child: PageView(
-            physics: NeverScrollableScrollPhysics(),
-            controller: _pageController,
-            children: <Widget>[
-              MainPage(),
-              ProjectListPage(),
-              BookmarkPage(),
-              ListDetailPage(),
-              AddProjectPage(),
-            ],
-            onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-          ),
-        ),
-      ],
+          );
+        } else {
+          return Scaffold(
+            body: PageView(
+                controller: _pageController,
+                children: <Widget>[
+                  MainPage(),
+                  ProjectListPage(),
+                  BookmarkPage(),
+                ],
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                }),
+            bottomNavigationBar: BottomNavigationBar(
+              elevation: 0.0,
+              onTap: onTabNavigate,
+              currentIndex: _currentIndex,
+              items: _navItems,
+            ),
+          );
+        }
+      },
     );
   }
 }

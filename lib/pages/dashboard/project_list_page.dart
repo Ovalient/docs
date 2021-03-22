@@ -1,3 +1,4 @@
+import 'package:docs/pages/dashboard/add_project_page.dart';
 import 'package:docs/pages/dashboard/tab_pages/factory_list.dart';
 import 'package:docs/pages/dashboard/tab_pages/recent_list.dart';
 import 'package:docs/pages/dashboard/tab_pages/search_list.dart';
@@ -58,7 +59,10 @@ class _ProjectListPageState extends State<ProjectListPage>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          onTabNavigate(4);
+          if (MediaQuery.of(context).size.width > 600)
+            onTabNavigate(4);
+          else
+            Navigator.pop(context, AddProjectPage());
         },
         child: Icon(Icons.add),
         backgroundColor: Colors.redAccent,

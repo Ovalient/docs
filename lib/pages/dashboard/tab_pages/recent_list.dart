@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:docs/models/model.dart';
+import 'package:docs/pages/dashboard/list_detail_page.dart';
 import 'package:docs/pages/dashboard_page.dart';
 import 'package:docs/utils/data_source.dart';
 import 'package:docs/widgets/company_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RecentList extends StatefulWidget {
   RecentList({Key key}) : super(key: key);
@@ -17,8 +19,23 @@ class _RecentListState extends State<RecentList>
     with AutomaticKeepAliveClientMixin {
   final firestore = FirebaseFirestore.instance;
 
-  bool _tableView = false;
+  bool _viewType = false;
   int _rowsPerPage = PaginatedDataTable.defaultRowsPerPage;
+
+  _loadViewType() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _viewType = prefs.getBool('view_type') ?? false;
+    });
+  }
+
+  _setViewType(bool flag) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _viewType = flag;
+      prefs.setBool('view_type', flag);
+    });
+  }
 
   getCompanyIcon(String name) {
     Widget icon;
@@ -48,7 +65,11 @@ class _RecentListState extends State<RecentList>
       itemBuilder: (index, context, documentSnapshot) => Card(
         child: InkWell(
           onTap: () {
-            onTabNavigate(3);
+            setState(() => isBookmark = false);
+            if (MediaQuery.of(context).size.width > 600)
+              onTabNavigate(3);
+            else
+              Navigator.pushNamed(context, ListDetailPage.id);
             selectedReport = Report(
               companyName: documentSnapshot.data()['companyName'],
               date: documentSnapshot.data()['date'],
@@ -161,7 +182,7 @@ class _RecentListState extends State<RecentList>
           ));
         });
 
-        var documents = ReportDataSource(list);
+        var documents = ReportDataSource(list, context);
 
         return PaginatedDataTable(
           showCheckboxColumn: false,
@@ -216,8 +237,7 @@ class _RecentListState extends State<RecentList>
   @override
   void initState() {
     super.initState();
-
-    isBookmark = false;
+    _loadViewType();
   }
 
   @override
@@ -232,31 +252,35 @@ class _RecentListState extends State<RecentList>
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 InkWell(
-                  onTap: () => setState(() => _tableView = false),
+                  onTap: () async {
+                    await _setViewType(false);
+                  },
                   child: Container(
                     height: 56,
                     width: 56,
-                    color: (!_tableView) ? Colors.grey : Colors.transparent,
+                    color: (!_viewType) ? Colors.grey : Colors.transparent,
                     child: Icon(Icons.list_alt_sharp,
-                        color: (!_tableView) ? Colors.white : Colors.black),
+                        color: (!_viewType) ? Colors.white : Colors.black),
                   ),
                 ),
                 SizedBox(width: 4),
                 InkWell(
-                  onTap: () => setState(() => _tableView = true),
+                  onTap: () async {
+                    await _setViewType(true);
+                  },
                   child: Container(
                     height: 56,
                     width: 56,
-                    color: (_tableView) ? Colors.grey : Colors.transparent,
+                    color: (_viewType) ? Colors.grey : Colors.transparent,
                     child: Icon(Icons.table_chart_sharp,
-                        color: (_tableView) ? Colors.white : Colors.black),
+                        color: (_viewType) ? Colors.white : Colors.black),
                   ),
                 ),
               ],
             ),
           ),
           SizedBox(height: 20.0),
-          _tableView ? tableView() : listView(),
+          _viewType ? tableView() : listView(),
         ],
       ),
     );

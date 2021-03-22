@@ -81,7 +81,16 @@ flutter:
   fonts:
     - family: CompanyIcons
       fonts:
-       - asset: assets/fonts/CompanyIcons.ttf
+        - asset: assets/fonts/CompanyIcons.ttf
+    - family: NanumBarunGothic
+      fonts:
+        - asset: assets/fonts/NanumBarunGothicUltraLight.ttf
+          weight: 100
+        - asset: assets/fonts/NanumBarunGothicLight.ttf
+          weight: 300
+        - asset: assets/fonts/NanumBarunGothic.ttf
+        - asset: assets/fonts/NanumBarunGothicBold.ttf
+          weight: 700
   #   - family: Schyler
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf

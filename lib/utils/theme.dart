@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 TextStyle listTitleDefaultTextStyle =
     TextStyle(color: Colors.white70, fontSize: 20.0);
@@ -12,7 +11,7 @@ Color selectedColor = Color(0xFF4AC8EA);
 Color drawerBackgroundColor = Color(0xFF272D34);
 
 final mainTheme = ThemeData(
-  textTheme: GoogleFonts.notoSansTextTheme(),
+  fontFamily: 'NanumBarunGothic',
   primarySwatch: Colors.blueGrey,
   backgroundColor: Colors.white,
   cardColor: Colors.blueGrey[50],

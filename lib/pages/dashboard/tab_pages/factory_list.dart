@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:docs/models/model.dart';
+import 'package:docs/pages/dashboard/list_detail_page.dart';
 import 'package:docs/pages/dashboard_page.dart';
 import 'package:docs/widgets/company_icons.dart';
 import 'package:flutter/material.dart';
@@ -44,8 +45,6 @@ class _FactoryListState extends State<FactoryList>
   @override
   void initState() {
     super.initState();
-
-    isBookmark = false;
   }
 
   @override
@@ -90,7 +89,11 @@ class _FactoryListState extends State<FactoryList>
                       itemBuilder: (index, context, documentSnapshot) => Card(
                         child: InkWell(
                           onTap: () {
-                            onTabNavigate(3);
+                            setState(() => isBookmark = false);
+                            if (MediaQuery.of(context).size.width > 600)
+                              onTabNavigate(3);
+                            else
+                              Navigator.pushNamed(context, ListDetailPage.id);
                             selectedReport = Report(
                               companyName:
                                   documentSnapshot.data()['companyName'],
@@ -316,7 +319,9 @@ class _FactoryListState extends State<FactoryList>
                             child: Container(
                               child: Padding(
                                 padding: const EdgeInsets.all(20.0),
-                                child: getCompanyIcon(_companyId[index], 200.0),
+                                child: (MediaQuery.of(context).size.width < 600)
+                                    ? getCompanyIcon(_companyId[index], 50.0)
+                                    : getCompanyIcon(_companyId[index], 200.0),
                               ),
                               decoration: BoxDecoration(
                                 color: Color(0xF2404B60),

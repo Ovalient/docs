@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:docs/models/model.dart';
+import 'package:docs/pages/dashboard/list_detail_page.dart';
 import 'package:docs/widgets/company_icons.dart';
 import 'package:docs/widgets/dialogs.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +53,11 @@ class _SearchListState extends State<SearchList>
     return Card(
       child: InkWell(
         onTap: () {
-          onTabNavigate(3);
+          setState(() => isBookmark = false);
+          if (MediaQuery.of(context).size.width > 600)
+            onTabNavigate(3);
+          else
+            Navigator.pushNamed(context, ListDetailPage.id);
           selectedReport = Report(
             companyName: report.companyName,
             date: report.date,
@@ -193,8 +198,6 @@ class _SearchListState extends State<SearchList>
   @override
   void initState() {
     super.initState();
-    isBookmark = false;
-
     _textController = TextEditingController();
     _textController.text = null;
     _textFocusNode = FocusNode();

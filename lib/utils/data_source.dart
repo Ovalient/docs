@@ -1,4 +1,5 @@
 import 'package:docs/models/model.dart';
+import 'package:docs/pages/dashboard/list_detail_page.dart';
 import 'package:docs/pages/dashboard_page.dart';
 import 'package:docs/widgets/company_icons.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +7,9 @@ import 'package:intl/intl.dart';
 
 class ReportDataSource extends DataTableSource {
   final List<Report> list;
+  final BuildContext context;
 
-  ReportDataSource(this.list);
+  ReportDataSource(this.list, this.context);
 
   DataRow getRow(int index) {
     final report = list[index];
@@ -21,7 +23,10 @@ class ReportDataSource extends DataTableSource {
         DataCell(Text(DateFormat('yyyy.MM.dd').format(report.date.toDate()))),
       ],
       onSelectChanged: (value) {
-        onTabNavigate(3);
+        if (MediaQuery.of(context).size.width > 600)
+          onTabNavigate(3);
+        else
+          Navigator.pushNamed(context, ListDetailPage.id);
         selectedReport = Report(
           companyName: report.companyName,
           date: report.date,
