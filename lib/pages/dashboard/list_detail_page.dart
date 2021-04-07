@@ -689,10 +689,10 @@ class _ListDetailPageState extends State<ListDetailPage> {
                                         MaterialButton(
                                           child: Text('OK'),
                                           onPressed: () async {
-                                            Navigator.of(context).pop();
-                                            Navigator.of(childContext).pop();
                                             await uploadToStorage(
                                                 _files, projectManager);
+                                            Navigator.of(context).pop();
+                                            Navigator.of(childContext).pop();
                                           },
                                         ),
                                       ],
@@ -808,6 +808,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
         'userName': userName,
       });
       await firestore.collection('recent').add({
+        'projectNum': projectNum,
         'recent':
             '$factoryName | $projectNum | ${selectedReport.title} | $category',
         'date': DateTime.now(),
@@ -979,7 +980,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
       'views': 0,
     });
     selectedReport = Report(
-        companyName: selectedReport.projectNum,
+        companyName: selectedReport.companyName,
         date: selectedReport.date,
         factoryName: selectedReport.factoryName,
         manager: uid,
@@ -1235,7 +1236,17 @@ class _ListDetailPageState extends State<ListDetailPage> {
               icon: Icon(Icons.keyboard_arrow_left),
               onPressed: () {
                 if (MediaQuery.of(context).size.width > 600)
-                  isBookmark ? onTabNavigate(2) : onTabNavigate(1);
+                  switch (previousPage) {
+                    case 0:
+                      onTabNavigate(0);
+                      break;
+                    case 1:
+                      onTabNavigate(1);
+                      break;
+                    case 2:
+                      onTabNavigate(2);
+                      break;
+                  }
                 else
                   Navigator.pop(context);
               },
@@ -1507,7 +1518,7 @@ class _ListDetailPageState extends State<ListDetailPage> {
                                         ),
                                       ),
                                       Tooltip(
-                                        message: '새 프로젝트 추가',
+                                        message: '첨부 파일 추가',
                                         child: Container(
                                           child: ElevatedButton(
                                             onPressed: () async {
@@ -1612,6 +1623,9 @@ class _ListDetailPageState extends State<ListDetailPage> {
                                         .listAll(),
                                     builder: (context, snapshot) {
                                       List<Reference> _fileList = [];
+
+                                      print(
+                                          '${selectedReport.companyName}/${selectedReport.factoryName}/${selectedReport.projectNum}/${_details[index].category}/${DateFormat().format(_details[index].date.toDate())}');
 
                                       if (!snapshot.hasData)
                                         return Container(

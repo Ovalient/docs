@@ -86,7 +86,7 @@ class _BookmarkPageState extends State<BookmarkPage>
     return Card(
       child: InkWell(
         onTap: () {
-          setState(() => isBookmark = true);
+          setState(() => previousPage = 2);
           if (MediaQuery.of(context).size.width > 600)
             onTabNavigate(3);
           else
@@ -121,6 +121,7 @@ class _BookmarkPageState extends State<BookmarkPage>
 
               snapshot.data.docs
                   .forEach((element) => listCategory = element['category']);
+
               if (listCategory == '종결-영업') {
                 return Container(
                   decoration: BoxDecoration(
@@ -136,7 +137,19 @@ class _BookmarkPageState extends State<BookmarkPage>
               } else if (listCategory == '지급청구-실무') {
                 return Container(
                   decoration: BoxDecoration(
-                      color: Colors.redAccent,
+                      color: Colors.red[900],
+                      borderRadius: BorderRadius.circular(4.0)),
+                  padding: EdgeInsets.only(
+                      left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
+                  child: Text(
+                    listCategory,
+                    style: TextStyle(color: Colors.white, fontSize: 14.0),
+                  ),
+                );
+              } else if (listCategory == '거래명세-영업') {
+                return Container(
+                  decoration: BoxDecoration(
+                      color: Colors.amber,
                       borderRadius: BorderRadius.circular(4.0)),
                   padding: EdgeInsets.only(
                       left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
@@ -148,7 +161,7 @@ class _BookmarkPageState extends State<BookmarkPage>
               } else if (listCategory == '') {
                 return Container(
                   decoration: BoxDecoration(
-                      color: Colors.redAccent,
+                      color: Colors.red[300],
                       borderRadius: BorderRadius.circular(4.0)),
                   padding: EdgeInsets.only(
                       left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
@@ -160,7 +173,7 @@ class _BookmarkPageState extends State<BookmarkPage>
               } else {
                 return Container(
                   decoration: BoxDecoration(
-                      color: Colors.orange[700],
+                      color: Colors.deepOrange,
                       borderRadius: BorderRadius.circular(4.0)),
                   padding: EdgeInsets.only(
                       left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),

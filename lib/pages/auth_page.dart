@@ -1,4 +1,5 @@
 import 'package:after_layout/after_layout.dart';
+import 'package:docs/models/model.dart';
 import 'package:docs/pages/dashboard_page.dart';
 import 'package:docs/pages/login_page.dart';
 import 'package:docs/utils/firebase_provider.dart';
@@ -27,11 +28,7 @@ class _AuthPageState extends State<AuthPage> with AfterLayoutMixin<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
+      body: SafeArea(child: Center(child: CircularProgressIndicator())),
     );
   }
 }

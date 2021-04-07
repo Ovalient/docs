@@ -1,4 +1,8 @@
 import 'package:docs/pages/auth_page.dart';
+import 'package:docs/pages/dashboard/admin_page.dart';
+import 'package:docs/pages/dashboard/admin_pages/user_manage_pages/add_user_page.dart';
+import 'package:docs/pages/dashboard/admin_pages/user_manage_pages/delete_user_page.dart';
+import 'package:docs/pages/dashboard/admin_pages/user_manage_pages/edit_user_page.dart';
 import 'package:docs/pages/dashboard/bookmark_page.dart';
 import 'package:docs/pages/dashboard/main_page.dart';
 import 'package:docs/pages/dashboard/project_list_page.dart';
@@ -30,6 +34,10 @@ class MyApp extends StatelessWidget {
         ProjectListPage.id: (context) => ProjectListPage(),
         BookmarkPage.id: (context) => BookmarkPage(),
         ListDetailPage.id: (context) => ListDetailPage(),
+        AdminPage.id: (context) => AdminPage(),
+        AddUserPage.id: (context) => AddUserPage(),
+        EditUserPage.id: (context) => EditUserPage(),
+        DeleteUserPage.id: (context) => DeleteUserPage(),
       },
     );
   }

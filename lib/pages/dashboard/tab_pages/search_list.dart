@@ -53,7 +53,7 @@ class _SearchListState extends State<SearchList>
     return Card(
       child: InkWell(
         onTap: () {
-          setState(() => isBookmark = false);
+          setState(() => previousPage = 1);
           if (MediaQuery.of(context).size.width > 600)
             onTabNavigate(3);
           else
@@ -80,6 +80,7 @@ class _SearchListState extends State<SearchList>
 
               snapshot.data.docs
                   .forEach((element) => listCategory = element['category']);
+
               if (listCategory == '종결-영업') {
                 return Container(
                   decoration: BoxDecoration(
@@ -95,7 +96,19 @@ class _SearchListState extends State<SearchList>
               } else if (listCategory == '지급청구-실무') {
                 return Container(
                   decoration: BoxDecoration(
-                      color: Colors.redAccent,
+                      color: Colors.red[900],
+                      borderRadius: BorderRadius.circular(4.0)),
+                  padding: EdgeInsets.only(
+                      left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
+                  child: Text(
+                    listCategory,
+                    style: TextStyle(color: Colors.white, fontSize: 14.0),
+                  ),
+                );
+              } else if (listCategory == '거래명세-영업') {
+                return Container(
+                  decoration: BoxDecoration(
+                      color: Colors.amber,
                       borderRadius: BorderRadius.circular(4.0)),
                   padding: EdgeInsets.only(
                       left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
@@ -107,7 +120,7 @@ class _SearchListState extends State<SearchList>
               } else if (listCategory == '') {
                 return Container(
                   decoration: BoxDecoration(
-                      color: Colors.redAccent,
+                      color: Colors.red[300],
                       borderRadius: BorderRadius.circular(4.0)),
                   padding: EdgeInsets.only(
                       left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
@@ -119,7 +132,7 @@ class _SearchListState extends State<SearchList>
               } else {
                 return Container(
                   decoration: BoxDecoration(
-                      color: Colors.orange[700],
+                      color: Colors.deepOrange,
                       borderRadius: BorderRadius.circular(4.0)),
                   padding: EdgeInsets.only(
                       left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
@@ -168,18 +181,25 @@ class _SearchListState extends State<SearchList>
         break;
       case 'manager':
         String uid;
-        await FirebaseFirestore.instance
-            .collection('user')
-            .where('userName', isEqualTo: _textController.text)
-            .get()
-            .then((value) => value.docs.forEach((element) => uid = element.id));
+        if (_textController.text == '미정') {
+          return FirebaseFirestore.instance
+              .collection('board')
+              .where('manager', isEqualTo: '미정');
+        } else {
+          await FirebaseFirestore.instance
+              .collection('user')
+              .where('userName', isEqualTo: _textController.text)
+              .get()
+              .then(
+                  (value) => value.docs.forEach((element) => uid = element.id));
 
-        print(uid);
+          print(uid);
 
-        return FirebaseFirestore.instance
-            .collection('board')
-            .orderBy('manager')
-            .startAt([uid]).endAt([uid + '\uf8ff']).get();
+          return FirebaseFirestore.instance
+              .collection('board')
+              .orderBy('manager')
+              .startAt([uid]).endAt([uid + '\uf8ff']).get();
+        }
         break;
     }
   }

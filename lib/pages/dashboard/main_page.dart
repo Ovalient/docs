@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:docs/models/model.dart';
+import 'package:docs/pages/dashboard/list_detail_page.dart';
+import 'package:docs/pages/dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -10,9 +13,8 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-final firestore = FirebaseFirestore.instance;
-
 class _MainPageState extends State<MainPage> {
+  final firestore = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -255,12 +257,6 @@ class _MainPageState extends State<MainPage> {
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          List<String> _recent = [];
-
-                          snapshot.data.docs.forEach((element) {
-                            _recent.add(element['recent']);
-                          });
-
                           return Column(
                             children: <Widget>[
                               Container(
@@ -298,12 +294,37 @@ class _MainPageState extends State<MainPage> {
                                         top: 20.0,
                                         bottom: 20.0),
                                     physics: NeverScrollableScrollPhysics(),
-                                    itemCount: _recent.length,
+                                    itemCount: snapshot.data.docs.length,
                                     itemBuilder: (context, index) {
-                                      return Text(
-                                        _recent[index],
-                                        style: TextStyle(
-                                          fontSize: 14.0,
+                                      return InkWell(
+                                        onTap: () async {
+                                          setState(() => previousPage = 0);
+                                          await firestore
+                                              .collection('board')
+                                              .doc(snapshot.data.docs[index]
+                                                  ['projectNum'])
+                                              .get()
+                                              .then((value) {
+                                            selectedReport = Report(
+                                              companyName:
+                                                  value.data()['companyName'],
+                                              date: value.data()['date'],
+                                              factoryName:
+                                                  value.data()['factoryName'],
+                                              manager: value.data()['manager'],
+                                              projectNum:
+                                                  value.data()['projectNum'],
+                                              title: value.data()['title'],
+                                              views: value.data()['views'],
+                                            );
+                                            onTabNavigate(3);
+                                          });
+                                        },
+                                        child: Text(
+                                          snapshot.data.docs[index]['recent'],
+                                          style: TextStyle(
+                                            fontSize: 14.0,
+                                          ),
                                         ),
                                       );
                                     },
@@ -573,12 +594,6 @@ class _MainPageState extends State<MainPage> {
                                 .snapshots(),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                List<String> _recent = [];
-
-                                snapshot.data.docs.forEach((element) {
-                                  _recent.add(element['recent']);
-                                });
-
                                 return Column(
                                   children: <Widget>[
                                     Container(
@@ -618,12 +633,44 @@ class _MainPageState extends State<MainPage> {
                                               bottom: 20.0),
                                           physics:
                                               NeverScrollableScrollPhysics(),
-                                          itemCount: _recent.length,
+                                          itemCount: snapshot.data.docs.length,
                                           itemBuilder: (context, index) {
-                                            return Text(
-                                              _recent[index],
-                                              style: TextStyle(
-                                                fontSize: 14.0,
+                                            return InkWell(
+                                              onTap: () async {
+                                                setState(
+                                                    () => previousPage = 0);
+                                                await firestore
+                                                    .collection('board')
+                                                    .doc(snapshot
+                                                            .data.docs[index]
+                                                        ['projectNum'])
+                                                    .get()
+                                                    .then((value) {
+                                                  selectedReport = Report(
+                                                    companyName: value
+                                                        .data()['companyName'],
+                                                    date: value.data()['date'],
+                                                    factoryName: value
+                                                        .data()['factoryName'],
+                                                    manager:
+                                                        value.data()['manager'],
+                                                    projectNum: value
+                                                        .data()['projectNum'],
+                                                    title:
+                                                        value.data()['title'],
+                                                    views:
+                                                        value.data()['views'],
+                                                  );
+                                                  Navigator.pushNamed(context,
+                                                      ListDetailPage.id);
+                                                });
+                                              },
+                                              child: Text(
+                                                snapshot.data.docs[index]
+                                                    ['recent'],
+                                                style: TextStyle(
+                                                  fontSize: 14.0,
+                                                ),
                                               ),
                                             );
                                           },

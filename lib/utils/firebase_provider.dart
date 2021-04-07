@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:docs/models/model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // class FirebaseProvider {
@@ -82,7 +83,7 @@ User getUser() {
   return user;
 }
 
-Future<List> getUserInfo(String uid) async {
+Future<void> getUserInfo(String uid) async {
   List list = [];
 
   await FirebaseFirestore.instance
@@ -91,8 +92,9 @@ Future<List> getUserInfo(String uid) async {
       .get()
       .then((DocumentSnapshot doc) {
     if (doc.exists) {
-      list.add(doc.data()['userName']);
-      list.add(doc.data()['rank']);
+      userEmail = doc.data()['email'];
+      userName = doc.data()['userName'];
+      userRank = doc.data()['rank'];
     }
   });
 
@@ -171,6 +173,16 @@ Future<String> signIn({String email, String password}) async {
     }
   }
   return errorMessage;
+}
+
+// 사용자에게 비밀번호 재설정 메일을 전송
+Future<bool> sendPasswordResetEmail({String email}) async {
+  try {
+    await _auth.sendPasswordResetEmail(email: email);
+  } catch (e) {
+    return false;
+  }
+  return true;
 }
 
 // Firebase로부터 로그아웃

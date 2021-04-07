@@ -40,5 +40,6 @@ Report selectedReport;
 
 String userEmail;
 String userName;
+String userRank;
 
-bool isBookmark;
+int previousPage;
