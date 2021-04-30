@@ -95,6 +95,7 @@ Future<void> getUserInfo(String uid) async {
       userEmail = doc.data()['email'];
       userName = doc.data()['userName'];
       userRank = doc.data()['rank'];
+      userAuth = doc.data()['enabled'];
     }
   });
 
@@ -102,7 +103,8 @@ Future<void> getUserInfo(String uid) async {
 }
 
 // 이메일/비밀번호로 Firebase에 회원가입
-Future<String> signUp({String username, String email, String password}) async {
+Future<String> signUp(
+    {String username, String email, String password, String rank}) async {
   String errorMessage;
 
   try {
@@ -110,10 +112,12 @@ Future<String> signUp({String username, String email, String password}) async {
         email: email, password: password);
     if (userCredential.user != null) {
       userCredential.user.sendEmailVerification();
+      userCredential.user.updateProfile(displayName: username);
       try {
         await firestore.collection('user').doc(userCredential.user.uid).set({
-          'username': username,
+          'userName': username,
           'email': email,
+          'rank': rank,
         });
       } on FirebaseException catch (e) {
         // e.g, e.code == 'canceled'

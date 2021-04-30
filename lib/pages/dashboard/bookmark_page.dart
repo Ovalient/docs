@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:docs/models/model.dart';
 import 'package:docs/pages/dashboard/list_detail_page.dart';
 import 'package:docs/pages/dashboard_page.dart';
-import 'package:docs/utils/data_source.dart';
+import 'package:docs/utils/bookmark_data_source.dart';
+import 'package:docs/utils/recent_data_source.dart';
 import 'package:docs/utils/firebase_provider.dart';
 import 'package:docs/widgets/company_icons.dart';
 import 'package:flutter/material.dart';
@@ -221,7 +222,7 @@ class _BookmarkPageState extends State<BookmarkPage>
               height: MediaQuery.of(context).size.height,
               child: Center(child: CircularProgressIndicator()));
 
-        var documents = ReportDataSource(snapshot.data, context);
+        var documents = BookmarkDataSource(snapshot.data, context);
 
         return PaginatedDataTable(
           showCheckboxColumn: false,
@@ -247,6 +248,18 @@ class _BookmarkPageState extends State<BookmarkPage>
             DataColumn(
               label: Text(
                 '프로젝트 명',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'PM',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                '등록 유형',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),

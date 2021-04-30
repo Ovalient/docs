@@ -184,7 +184,8 @@ class _SearchListState extends State<SearchList>
         if (_textController.text == '미정') {
           return FirebaseFirestore.instance
               .collection('board')
-              .where('manager', isEqualTo: '미정');
+              .where('manager', isEqualTo: '미정')
+              .get();
         } else {
           await FirebaseFirestore.instance
               .collection('user')
@@ -381,6 +382,7 @@ class _SearchListState extends State<SearchList>
                       snapshot.data.docs.forEach((element) {
                         documents.add(Report(
                           companyName: element.data()['companyName'],
+                          date: element.data()['date'],
                           factoryName: element.data()['factoryName'],
                           projectNum: element.data()['projectNum'],
                           manager: element.data()['manager'],
@@ -389,7 +391,9 @@ class _SearchListState extends State<SearchList>
                         ));
                       });
 
-                      documents.reversed;
+                      documents.sort((a, b) {
+                        return b.date.compareTo(a.date);
+                      });
 
                       return ListView.builder(
                         physics: NeverScrollableScrollPhysics(),

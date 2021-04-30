@@ -62,7 +62,7 @@ class _ProjectListPageState extends State<ProjectListPage>
           if (MediaQuery.of(context).size.width > 600)
             onTabNavigate(4);
           else
-            Navigator.pop(context, AddProjectPage());
+            Navigator.pushNamed(context, AddProjectPage.id);
         },
         child: Icon(Icons.add),
         backgroundColor: Colors.redAccent,

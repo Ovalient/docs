@@ -41,5 +41,6 @@ Report selectedReport;
 String userEmail;
 String userName;
 String userRank;
+bool userAuth;
 
 int previousPage;

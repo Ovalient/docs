@@ -5,6 +5,7 @@ import 'package:docs/utils/firebase_provider.dart';
 import 'package:flutter/material.dart';
 
 class AddProjectPage extends StatefulWidget {
+  static const String id = '/dashboard/add';
   AddProjectPage({Key key}) : super(key: key);
 
   @override
@@ -41,7 +42,7 @@ class _AddProjectPageState extends State<AddProjectPage> {
     final date = DateTime.now();
 
     try {
-      await firestore.collection('board').doc(number).set({
+      await firestore.collection('board').add({
         'projectNum': number,
         'companyName': _companyName,
         'factoryName': _factoryName,

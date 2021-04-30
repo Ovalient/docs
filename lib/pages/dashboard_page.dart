@@ -74,152 +74,174 @@ class _DashboardPageState extends State<DashboardPage>
                 height: MediaQuery.of(context).size.height,
                 child: Center(child: CircularProgressIndicator()));
           } else {
-            return LayoutBuilder(
-              builder: (build, constraints) {
-                if (constraints.maxWidth > 600) {
-                  return Row(
-                    children: [
-                      Drawer(
-                        child: Stack(
-                          children: [
-                            ListView(
-                              // Important: Remove any padding from the ListView.
-                              padding: EdgeInsets.zero,
-                              children: <Widget>[
-                                UserAccountsDrawerHeader(
-                                  decoration:
-                                      BoxDecoration(color: Color(0xF2404B60)),
-                                  currentAccountPicture: CircleAvatar(
-                                    backgroundColor: Colors.redAccent,
-                                    child: Icon(
-                                      Icons.check,
-                                      color: Colors.white,
+            if (userAuth) {
+              return LayoutBuilder(
+                builder: (build, constraints) {
+                  if (constraints.maxWidth > 600) {
+                    return Row(
+                      children: [
+                        Drawer(
+                          child: Stack(
+                            children: [
+                              ListView(
+                                // Important: Remove any padding from the ListView.
+                                padding: EdgeInsets.zero,
+                                children: <Widget>[
+                                  UserAccountsDrawerHeader(
+                                    decoration:
+                                        BoxDecoration(color: Color(0xF2404B60)),
+                                    currentAccountPicture: CircleAvatar(
+                                      backgroundColor: Colors.redAccent,
+                                      child: Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                      ),
                                     ),
+                                    accountName: Text(userName),
+                                    accountEmail: Text(userEmail),
                                   ),
-                                  accountName: Text(userName),
-                                  accountEmail: Text(userEmail),
-                                ),
-                                ListTile(
-                                  leading: Icon(Icons.logout),
-                                  title: Text('로그아웃'),
-                                  onTap: () {
-                                    signOut();
-                                    Navigator.popAndPushNamed(
-                                        context, LoginPage.id);
-                                  },
-                                ),
-                                Divider(
-                                  height: 1,
-                                  thickness: 1,
-                                ),
-                                ListView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: drawerItems.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    Map item = drawerItems[index];
+                                  ListTile(
+                                    leading: Icon(Icons.logout),
+                                    title: Text('로그아웃'),
+                                    onTap: () {
+                                      signOut();
+                                      Navigator.popAndPushNamed(
+                                          context, LoginPage.id);
+                                    },
+                                  ),
+                                  Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                  ),
+                                  ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: drawerItems.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      Map item = drawerItems[index];
 
-                                    return ListTile(
-                                      leading: Icon(item['icon']),
-                                      title: Text(item['name']),
-                                      onTap: () {
-                                        _currentIndex = index;
-                                        onTabNavigate(_currentIndex);
-                                      },
-                                    );
-                                  },
-                                ),
-                                Divider(
-                                  height: 1,
-                                  thickness: 1,
-                                ),
-                                ListTile(
-                                  leading: Icon(Icons.date_range),
-                                  title: Text('구글 캘린더'),
-                                  onTap: () async {
-                                    String url =
-                                        'https://calendar.google.com/calendar';
-                                    if (await canLaunch(url)) {
-                                      await launch(url);
-                                    } else {
-                                      throw 'Could not launch $url';
-                                    }
-                                  },
-                                ),
-                                userRank == '관리자'
-                                    ? Divider(height: 1, thickness: 1)
-                                    : SizedBox(),
-                                userRank == '관리자'
-                                    ? ListTile(
-                                        leading: Icon(Icons.construction),
-                                        title: Text('관리자 페이지'),
+                                      return ListTile(
+                                        leading: Icon(item['icon']),
+                                        title: Text(item['name']),
                                         onTap: () {
-                                          Navigator.pushNamed(
-                                              context, AdminPage.id);
+                                          _currentIndex = index;
+                                          onTabNavigate(_currentIndex);
                                         },
-                                      )
-                                    : SizedBox(),
-                              ],
-                            ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Image.asset('icons/logo.png'),
+                                      );
+                                    },
+                                  ),
+                                  Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                  ),
+                                  ListTile(
+                                    leading: Icon(Icons.date_range),
+                                    title: Text('구글 캘린더'),
+                                    onTap: () async {
+                                      String url =
+                                          'https://calendar.google.com/calendar';
+                                      if (await canLaunch(url)) {
+                                        await launch(url);
+                                      } else {
+                                        throw 'Could not launch $url';
+                                      }
+                                    },
+                                  ),
+                                  userRank == '관리자'
+                                      ? Divider(height: 1, thickness: 1)
+                                      : SizedBox(),
+                                  userRank == '관리자'
+                                      ? ListTile(
+                                          leading: Icon(Icons.construction),
+                                          title: Text('관리자 페이지'),
+                                          onTap: () {
+                                            Navigator.pushNamed(
+                                                context, AdminPage.id);
+                                          },
+                                        )
+                                      : SizedBox(),
+                                ],
                               ),
-                            ),
-                          ],
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Image.asset('icons/logo.png'),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      VerticalDivider(
-                        width: 1,
-                        thickness: 1,
-                      ),
-                      Expanded(
-                        child: PageView(
-                          physics: NeverScrollableScrollPhysics(),
+                        VerticalDivider(
+                          width: 1,
+                          thickness: 1,
+                        ),
+                        Expanded(
+                          child: PageView(
+                            physics: NeverScrollableScrollPhysics(),
+                            controller: _pageController,
+                            children: <Widget>[
+                              MainPage(),
+                              ProjectListPage(),
+                              BookmarkPage(),
+                              ListDetailPage(),
+                              AddProjectPage(),
+                            ],
+                            onPageChanged: (index) {
+                              setState(() {
+                                _currentIndex = index;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Scaffold(
+                      body: PageView(
                           controller: _pageController,
                           children: <Widget>[
                             MainPage(),
                             ProjectListPage(),
                             BookmarkPage(),
-                            ListDetailPage(),
-                            AddProjectPage(),
                           ],
                           onPageChanged: (index) {
                             setState(() {
                               _currentIndex = index;
                             });
-                          },
-                        ),
+                          }),
+                      bottomNavigationBar: BottomNavigationBar(
+                        elevation: 0.0,
+                        onTap: onTabNavigate,
+                        currentIndex: _currentIndex,
+                        items: _navItems,
                       ),
-                    ],
-                  );
-                } else {
-                  return Scaffold(
-                    body: PageView(
-                        controller: _pageController,
-                        children: <Widget>[
-                          MainPage(),
-                          ProjectListPage(),
-                          BookmarkPage(),
-                        ],
-                        onPageChanged: (index) {
-                          setState(() {
-                            _currentIndex = index;
-                          });
-                        }),
-                    bottomNavigationBar: BottomNavigationBar(
-                      elevation: 0.0,
-                      onTap: onTabNavigate,
-                      currentIndex: _currentIndex,
-                      items: _navItems,
-                    ),
-                  );
-                }
-              },
-            );
+                    );
+                  }
+                },
+              );
+            } else {
+              return Scaffold(
+                body: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Center(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.report_problem,
+                            size: 150.0, color: Colors.red),
+                        SizedBox(height: 20.0),
+                        Text(
+                            '이 계정은 현재 비활성화 상태입니다.\n활성화 상태로 전환하려면 관리자에게 요청하십시오.',
+                            textAlign: TextAlign.center,
+                            style:
+                                TextStyle(fontSize: 30.0, color: Colors.red)),
+                      ],
+                    ))),
+              );
+            }
           }
         });
   }

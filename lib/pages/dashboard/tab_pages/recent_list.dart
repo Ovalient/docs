@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:docs/models/model.dart';
 import 'package:docs/pages/dashboard/list_detail_page.dart';
 import 'package:docs/pages/dashboard_page.dart';
-import 'package:docs/utils/data_source.dart';
+import 'package:docs/utils/recent_data_source.dart';
 import 'package:docs/widgets/company_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:paginate_firestore/paginate_firestore.dart';
@@ -196,7 +196,7 @@ class _RecentListState extends State<RecentList>
           ));
         });
 
-        var documents = ReportDataSource(list, context);
+        var documents = RecentDataSource(list, context);
 
         return PaginatedDataTable(
           showCheckboxColumn: false,
@@ -222,6 +222,18 @@ class _RecentListState extends State<RecentList>
             DataColumn(
               label: Text(
                 '프로젝트 명',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                'PM',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                '등록 유형',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),

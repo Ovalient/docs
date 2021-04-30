@@ -1,10 +1,10 @@
 import 'package:docs/models/model.dart';
 import 'package:docs/pages/auth_page.dart';
+import 'package:docs/pages/dashboard/admin_pages/board_manager_pages/edit_content_page.dart';
+import 'package:docs/pages/dashboard/admin_pages/board_manager_pages/edit_project_page.dart';
 import 'package:docs/utils/firebase_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'admin_pages/user_manage_pages/add_user_page.dart';
-import 'admin_pages/user_manage_pages/delete_user_page.dart';
 import 'admin_pages/user_manage_pages/edit_user_page.dart';
 
 class AdminPage extends StatefulWidget {
@@ -112,9 +112,9 @@ class _AdminPageState extends State<AdminPage>
                         physics: NeverScrollableScrollPhysics(),
                         controller: _pageController,
                         children: <Widget>[
-                          AddUserPage(),
                           EditUserPage(),
-                          DeleteUserPage(),
+                          EditProjectPage(),
+                          EditContentPage(),
                         ],
                         onPageChanged: (index) {
                           setState(() {
@@ -154,18 +154,22 @@ class _AdminPageState extends State<AdminPage>
 }
 
 class Entry {
-  Entry(this.title, [this.children = const <Entry>[]]);
+  Entry(this.icon, this.title, [this.children = const <Entry>[]]);
 
+  final IconData icon;
   final String title;
   final List<Entry> children;
 }
 
 final List<Entry> drawer = <Entry>[
-  new Entry('사용자 관리', <Entry>[
-    new Entry('사용자 추가'),
-    new Entry('사용자 수정'),
-    new Entry('사용자 삭제'),
-  ])
+  new Entry(Icons.people_outlined, '사용자', <Entry>[
+    new Entry(null, '사용자 관리'),
+  ]),
+  new Entry(Icons.description_outlined, '게시글', <Entry>[
+    new Entry(null, '프로젝트 관리'),
+    new Entry(null, '내용 관리'),
+  ]),
+  new Entry(Icons.cloud_outlined, 'Google Firebase')
 ];
 
 class EntryItem extends StatelessWidget {
@@ -179,19 +183,22 @@ class EntryItem extends StatelessWidget {
       return new ListTile(
           onTap: () {
             switch (root.title) {
-              case '사용자 추가':
+              case '사용자 관리':
                 onTabNavigate(0);
                 break;
-              case '사용자 수정':
+              case '프로젝트 관리':
                 onTabNavigate(1);
                 break;
-              case '사용자 삭제':
+              case '내용 관리':
                 onTabNavigate(2);
+                break;
             }
           },
           title: new Text(root.title));
     return new ExpansionTile(
+      initiallyExpanded: true,
       key: new PageStorageKey<Entry>(root),
+      leading: new Icon(root.icon),
       title: new Text(root.title),
       children: root.children.map(_buildTiles).toList(),
     );

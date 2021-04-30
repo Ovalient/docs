@@ -346,21 +346,18 @@ class _ListDetailPageState extends State<ListDetailPage> {
                               Navigator.of(context).pop();
                               Navigator.of(childContext).pop();
 
-                              setState(() {
-                                _bytesFiles = [];
-                                _files = [];
+                              _bytesFiles = [];
+                              _files = [];
 
-                                _importance = false;
-                                _kickoff = false;
-                                category = null;
-                                _isCategorySelected = false;
-                                projectManager = null;
+                              _importance = false;
+                              _kickoff = false;
+                              category = null;
+                              _isCategorySelected = false;
+                              projectManager = null;
 
-                                textControllerContents =
-                                    TextEditingController();
-                                textControllerContents.text = null;
-                                textFocusNodeContents = FocusNode();
-                              });
+                              textControllerContents = TextEditingController();
+                              textControllerContents.text = null;
+                              textFocusNodeContents = FocusNode();
                             },
                             child: Text('OK')),
                         MaterialButton(
@@ -381,8 +378,6 @@ class _ListDetailPageState extends State<ListDetailPage> {
       ),
       content: StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
-          setState(() {});
-
           return Container(
             width: MediaQuery.of(context).size.width * 0.6,
             height: MediaQuery.of(context).size.height * 0.6,
@@ -691,6 +686,20 @@ class _ListDetailPageState extends State<ListDetailPage> {
                                           onPressed: () async {
                                             await uploadToStorage(
                                                 _files, projectManager);
+
+                                            _bytesFiles = [];
+                                            _files = [];
+
+                                            _importance = false;
+                                            _kickoff = false;
+                                            category = null;
+                                            _isCategorySelected = false;
+                                            projectManager = null;
+
+                                            textControllerContents =
+                                                TextEditingController();
+                                            textControllerContents.text = null;
+                                            textFocusNodeContents = FocusNode();
                                             Navigator.of(context).pop();
                                             Navigator.of(childContext).pop();
                                           },
@@ -764,37 +773,25 @@ class _ListDetailPageState extends State<ListDetailPage> {
               ],
             );
           });
-      if (projectManager != null) {
-        String uid;
-        await firestore
-            .collection('user')
-            .where('userName', isEqualTo: projectManager)
-            .get()
-            .then((value) {
-          value.docs.forEach((element) {
-            uid = element.id;
-          });
-        });
-        await firestore.collection('board').doc(projectNum).update({
-          'projectNum': selectedReport.projectNum,
-          'companyName': selectedReport.companyName,
-          'factoryName': selectedReport.factoryName,
-          'title': selectedReport.title,
-          'date': selectedReport.date,
-          'manager': uid,
-          'views': 0,
-        });
-      } else {
-        await firestore.collection('board').doc(projectNum).update({
-          'projectNum': selectedReport.projectNum,
-          'companyName': selectedReport.companyName,
-          'factoryName': selectedReport.factoryName,
-          'title': selectedReport.title,
-          'date': selectedReport.date,
-          'manager': '미정',
-          'views': 0,
-        });
-      }
+      // String uid;
+      // await firestore
+      //     .collection('user')
+      //     .where('userName', isEqualTo: projectManager)
+      //     .get()
+      //     .then((value) {
+      //   value.docs.forEach((element) {
+      //     uid = element.id;
+      //   });
+      // });
+      await firestore.collection('board').doc(projectNum).update({
+        'projectNum': selectedReport.projectNum,
+        'companyName': selectedReport.companyName,
+        'factoryName': selectedReport.factoryName,
+        'title': selectedReport.title,
+        'date': selectedReport.date,
+        'manager': projectManager != null ? projectManager : '미정',
+        'views': 0,
+      });
       await firestore
           .collection('board')
           .doc(projectNum)
